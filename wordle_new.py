@@ -43,15 +43,21 @@ def find_index(char_list, char):
     return -1
 
 
+def add_to_list(char):
+    chars.append(char)
+    if char.status == Status.ANOTHER_PLACE:
+        predicted_chars_count += 1
+    elif char.status == Status.FOUND:
+        right_chars_count += 1
+
+
 chars = []
-first_word = "икота"
 right_chars_count = 0
 predicted_chars_count = 0
 predicted_word = 'икота'
 
 
 def check(results):
-    c = 0
     global right_chars_count
     char_count = 0
     global predicted_chars_count
@@ -63,11 +69,7 @@ def check(results):
             return False
         current_char = predicted_word[char_count]
         if not contains(chars, current_char):
-            chars.append(Char(current_char, current_status, char_count))
-            if current_status == Status.ANOTHER_PLACE:
-                predicted_chars_count += 1
-            elif current_status == Status.FOUND:
-                right_chars_count += 1
+            add_to_list(Char(current_char, current_status, char_count))
         else:
             index = find_index(chars, current_char)
             if current_status == Status.ANOTHER_PLACE == chars[index].status:
@@ -80,7 +82,6 @@ def check(results):
                     right_chars_count += 1
                 elif chars[index].status == Status.FOUND and \
                         char_count not in chars[index].positions:
-                    c = index
                     chars[index].positions.append(char_count)
                     right_chars_count += 1
         char_count += 1
@@ -91,8 +92,6 @@ def check(results):
 
 
 def predict():
-    if len(chars) == 0:
-        return first_word
     dictionary = open('dictionary.txt', encoding='utf-8')
     for word in dictionary:
         word = word.strip('\n')
@@ -120,7 +119,7 @@ def predict():
 
 
 if __name__ == '__main__':
-    print(predict())
+    print(predicted_word)
     while True:
         results = list(input())
         if check(results):
